@@ -28,6 +28,26 @@ public class CommunityUpdate {
     @Column(columnDefinition = "TEXT")
     private String note;
 
+    public Long getPlaceId() {
+        return placeId;
+    }
+
+    public Integer getReportedQueueLength() {
+        return reportedQueueLength;
+    }
+
+    public Integer getThroughputPerMin() {
+        return throughputPerMin;
+    }
+
+    public String getQueueStatus() {
+        return queueStatus;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
