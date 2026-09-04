@@ -100,6 +100,9 @@ public class InMemoryRedisConfig {
                                 long timeout = ((Number) args[2]).longValue();
                                 TimeUnit unit = (TimeUnit) args[3];
                                 expiryStore.put(k, System.currentTimeMillis() + unit.toMillis(timeout));
+                            } else if (args.length >= 3 && args[2] instanceof java.time.Duration) {
+                                java.time.Duration duration = (java.time.Duration) args[2];
+                                expiryStore.put(k, System.currentTimeMillis() + duration.toMillis());
                             }
                             return null;
                         } else if ("get".equals(name) && args != null && args.length >= 1) {

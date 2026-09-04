@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getPlaceDetails } from "../services/api";
+import { getPlaceDetails, getPlaces } from "../services/api";
 import { getImagesForPlace, handleImageError } from "../services/imageUtils";
 import LiveIntelligence from "../components/LiveIntelligence";
 import VirtualQueue from "../components/VirtualQueue";
@@ -37,7 +37,31 @@ export default function PlaceDetail() {
     setIsLoading(true);
     try {
       const details = await getPlaceDetails(id);
-      setPlaceDetails(details);
+      if (details && (details.place || details.description)) {
+        setPlaceDetails(details);
+      } else {
+        // Fallback: fetch place info from places list
+        const places = await getPlaces();
+        const p = Array.isArray(places) ? places.find(x => String(x.id) === String(id)) : null;
+        if (p) {
+          setPlaceDetails({
+            place: p,
+            description: p.description || `${p.name} is a renowned site in ${p.city}, ${p.state}.`,
+            significance: "A landmark destination of cultural, historical, or spiritual importance.",
+            dailyTimings: { open: "06:00", close: "21:00" },
+            reachInfo: {
+              byAir: `Nearest airport serving ${p.city}.`,
+              byRail: `Well connected via railway stations in ${p.city}.`,
+              byRoad: `Easily accessible by road, state highways, and local transit.`
+            },
+            rituals: [],
+            tags: [p.type, p.city, "india"],
+            avgDailyFootfall: p.capacity || 5000,
+            festivalRushMultiplier: p.peakMultiplier || 1.5,
+            queueConfig: { mode: p.type, liveMonitoring: true }
+          });
+        }
+      }
     } catch (err) {
       console.error("Error loading data:", err);
     } finally {
@@ -47,31 +71,29 @@ export default function PlaceDetail() {
 
   // 🔥 SAFE PARSING HELPERS
   const parseJSON = (data, fallback) => {
-  try {
-
-    if (!data) return fallback;
-
-    // already parsed array
-    if (Array.isArray(data)) {
-      return data;
+    try {
+      if (!data) return fallback;
+      let parsed = data;
+      // Recursively parse string if it was double-stringified
+      while (typeof parsed === "string") {
+        const trimmed = parsed.trim();
+        if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || 
+            (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+            (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
+          parsed = JSON.parse(parsed);
+        } else {
+          break;
+        }
+      }
+      return parsed || fallback;
+    } catch (err) {
+      console.error("JSON Parse Error:", err);
+      return fallback;
     }
+  };
 
-    // already parsed object
-    if (typeof data === "object") {
-      return data;
-    }
-
-    // parse stringified JSON
-    return JSON.parse(data);
-
-  } catch (err) {
-    console.error("JSON Parse Error:", err);
-    return fallback;
-  }
-};
-
-  //const images = parseJSON(placeDetails?.images, []);
-  const rituals = parseJSON(placeDetails?.rituals, []);
+  const ritualsRaw = parseJSON(placeDetails?.rituals, []);
+  const rituals = Array.isArray(ritualsRaw) ? ritualsRaw : [];
   const timings = parseJSON(placeDetails?.dailyTimings, {});
   const reach = parseJSON(placeDetails?.reachInfo, {});
 

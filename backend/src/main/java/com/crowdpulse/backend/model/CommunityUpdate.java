@@ -28,29 +28,32 @@ public class CommunityUpdate {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    public Long getPlaceId() {
-        return placeId;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Integer getReportedQueueLength() {
-        return reportedQueueLength;
-    }
+    public Long getPlaceId() { return placeId; }
+    public void setPlaceId(Long placeId) { this.placeId = placeId; }
 
-    public Integer getThroughputPerMin() {
-        return throughputPerMin;
-    }
+    public Integer getReportedQueueLength() { return reportedQueueLength; }
+    public void setReportedQueueLength(Integer reportedQueueLength) { this.reportedQueueLength = reportedQueueLength; }
 
-    public String getQueueStatus() {
-        return queueStatus;
-    }
+    public Integer getThroughputPerMin() { return throughputPerMin; }
+    public void setThroughputPerMin(Integer throughputPerMin) { this.throughputPerMin = throughputPerMin; }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public String getQueueStatus() { return queueStatus; }
+    public void setQueueStatus(String queueStatus) { this.queueStatus = queueStatus; }
+
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     private LocalDateTime createdAt;

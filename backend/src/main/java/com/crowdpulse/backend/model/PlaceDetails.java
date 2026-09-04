@@ -2,6 +2,7 @@ package com.crowdpulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
 @Entity
 @Table(name = "place_details")
@@ -23,24 +24,31 @@ public class PlaceDetails {
 
     private String bestTime;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String peakMonths;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String offPeakMonths;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String dailyTimings;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String rituals;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String reachInfo;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String images;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String tags;
 
@@ -48,6 +56,7 @@ public class PlaceDetails {
 
     private Double festivalRushMultiplier;
 
+    @JsonRawValue
     @Column(columnDefinition = "json")
     private String queueConfig;
 

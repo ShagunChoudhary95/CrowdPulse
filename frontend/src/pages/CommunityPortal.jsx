@@ -4,6 +4,7 @@ import {
   submitCommunityUpdate,
   getLatestCommunityUpdate,
   getCommunityHistory,
+  getPlaces,
 } from "../services/api";
 import Navbar from "../components/Navbar";
 import {
@@ -28,6 +29,7 @@ const statusConfig = {
 };
 
 export default function CommunityPortal() {
+  const [placesList, setPlacesList] = useState([]);
   const [placeId, setPlaceId] = useState(1);
   const [queueLength, setQueueLength] = useState("");
   const [throughput, setThroughput] = useState("");
@@ -45,12 +47,26 @@ export default function CommunityPortal() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const places = await getPlaces();
+        if (Array.isArray(places) && places.length > 0) {
+          setPlacesList(places);
+        }
+      } catch (err) {
+        console.error("Failed to load places in operator portal:", err);
+      }
+    };
+    fetchPlaces();
+  }, []);
+
+  useEffect(() => {
     const loadLatest = async () => {
       try {
         const data = await getLatestCommunityUpdate(placeId);
         setLatest(data);
         const historyData = await getCommunityHistory(placeId);
-        setHistory(historyData);
+        setHistory(Array.isArray(historyData) ? historyData : []);
       } catch (err) {
         console.error(err);
       }
@@ -306,8 +322,31 @@ export default function CommunityPortal() {
               </h2>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Place ID</label>
-                <input type="number" value={placeId} onChange={(e) => setPlaceId(e.target.value)} className={inputCls} />
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Destination</label>
+                <div className="relative">
+                  <select
+                    value={placeId}
+                    onChange={(e) => setPlaceId(Number(e.target.value))}
+                    className={`${inputCls} appearance-none pr-10 cursor-pointer font-bold text-slate-800`}
+                  >
+                    {placesList.length > 0 ? (
+                      placesList.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.city}, {p.state})
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value={1}>Kedarnath Temple</option>
+                        <option value={2}>Marine Drive</option>
+                        <option value={3}>Taj Mahal</option>
+                        <option value={4}>Kashi Vishwanath</option>
+                        <option value={5}>Vaishno Devi Temple</option>
+                      </>
+                    )}
+                  </select>
+                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

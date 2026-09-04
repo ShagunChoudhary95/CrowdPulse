@@ -73,6 +73,12 @@ const alertConfig = {
     text: "text-emerald-600",
     icon: ShieldCheck,
   },
+  NORMAL: {
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    text: "text-emerald-600",
+    icon: ShieldCheck,
+  },
   MODERATE: {
     bg: "bg-amber-50",
     border: "border-amber-200",

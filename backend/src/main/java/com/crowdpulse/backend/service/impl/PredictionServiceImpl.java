@@ -36,17 +36,10 @@ public class PredictionServiceImpl implements PredictionService {
 
     @Override
     public Map<String, Object> getPrediction(Long placeId) {
-
-        List<QueueMetrics> data =
-                queueMetricsRepository.findTop50ByPlaceIdOrderByTimestampDesc(placeId);
-
-        if (data.isEmpty()) {
-            return Map.of("message", "Not enough data");
-        }
-
-        // 🔥 CURRENT WAIT — synced with calculateWaitTime() for consistency with Estimated Wait card
+        // Live wait time calculation (or sensible baseline based on place config)
         WaitTimeResponse liveWait = queueService.calculateWaitTime(placeId);
-        int currentWait = liveWait.getWaitMinutes();
+        int currentWait = (liveWait != null) ? liveWait.getWaitMinutes() : 0;
+        int baselineWait = currentWait > 0 ? currentWait : 15;
 
         // ══════════════════════════════════════════════════════════
         // 🔥 9-HOUR WINDOW TIMELINE
@@ -85,7 +78,7 @@ public class PredictionServiceImpl implements PredictionService {
             } else {
                 // Future hours: extrapolate from current wait using multipliers
                 double multiplier = getHourlyMultiplier(hour);
-                waitValue = (int) Math.ceil(currentWait * multiplier);
+                waitValue = (int) Math.ceil((currentWait > 0 ? currentWait : baselineWait) * multiplier);
             }
 
             Map<String, Object> point = new HashMap<>();

@@ -19,7 +19,7 @@ const PLACE_IMAGE_MAP = {
   "Kedarnath Temple": ["/kedarnath.jpg"],
   "Kashi Vishwanath": ["/kashi-vishwanath.webp"],
   "Vaishno Devi Temple": ["/vaishno_devi.jpg"],
-  "Taj Mahal": ["/marine_drive.jpg"], // TODO: Replace with /Taj_Mahal.jpg when asset is added
+  "Taj Mahal": ["/taj_mahal.jpg"],
   "Marine Drive": ["/marine_drive.jpg"],
 };
 
@@ -29,9 +29,11 @@ const PLACE_IMAGE_MAP = {
  * This takes priority over name-based matching.
  */
 const PLACE_ID_IMAGE_MAP = {
-  // Populate with your actual DB IDs, e.g.:
-  // 1: ["/kedarnath.jpg"],
-  // 2: ["/kashi-vishwanath.webp"],
+  1: ["/kedarnath.jpg"],
+  2: ["/marine_drive.jpg"],
+  3: ["/taj_mahal.jpg"],
+  4: ["/kashi-vishwanath.webp"],
+  5: ["/vaishno_devi.jpg"],
 };
 
 /**
